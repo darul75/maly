@@ -5,12 +5,10 @@ import (
 	"fmt"
 	/*"io"*/
 	"log"
-	/*"math"*/
+	"math/big"
 	"os"
 	/*"sort"*/
-	"strconv"
-	"strings"
-)
+	/*"strconv"*/ /*"strings"*/)
 
 // INTERFACE
 
@@ -83,36 +81,39 @@ func doStuff(info *Info) {
 
 	//mask, _ := strconv.ParseInt("11111", 2, 8)
 
+	var bigNum1 big.Int
+	var bigNum2 big.Int
+	var result big.Int
+
 	var max int64 = 0
 	team := 0
 
-	for i := 0; i < len(lines)-1; i++ {
-		fmt.Println(lines[i])
-		st1, _ := strconv.ParseInt(string(lines[i]), 2, 64)
-		fmt.Println(st1)
+	for i := 0; i < len(lines); i++ {
 		for j := i + 1; j < len(lines); j++ {
-			st2, _ := strconv.ParseInt(string(lines[j]), 2, 64)
-			val := st1 | st2
-			//fmt.Println(strconv.FormatInt(val, 2))
-			if val > max {
-				max = val
+			bits := int64(0)
+
+			if _, ok := bigNum1.SetString(string(lines[i]), 2); !ok {
+				panic("invalid num1")
+			}
+			if _, ok := bigNum2.SetString(string(lines[j]), 2); !ok {
+				panic("invalid num2")
+			}
+			result.Or(&bigNum1, &bigNum2)
+
+			for i := result.BitLen() - 1; i >= 0; i-- {
+				bits += int64(result.Bit(i))
+			}
+
+			if bits > max {
+				max = bits
 				team = 1
-			} else if val == max {
+			} else if bits == max {
 				team += 1
 			}
+
 		}
 	}
 
-	maxBinaryStr := strconv.FormatInt(max, 2)
-	fmt.Println(strings.Count(maxBinaryStr, "1"))
+	fmt.Println(max)
 	fmt.Println(team)
-
-	// compute, find best unfairness
-
-	//fmt.Println(nums)
-
-	/*for _, v := range info.LinesString {
-		fmt.Println(v)
-	}*/
-
 }
