@@ -5,7 +5,9 @@ import (
 	"fmt"
 	/*"io"*/
 	"log"
+	"math"
 	"os"
+	"strconv"
 	"strings"
 	/*"sort"*/ /*"strconv"*/ /*"strings"*/)
 
@@ -35,14 +37,6 @@ func main() {
 	}
 
 	info.Play()
-}
-
-func (info *Info) ReadStdIn() {
-	/*fmt.Scan(&info.Num)
-	info.LinesString = make([]LineString, info.Num)
-	for i := 0; i < info.Num; i++ {
-		fmt.Scan(&info.LinesString[i])
-	}*/
 }
 
 func (info *Info) ReadInputFile(input string) {
@@ -81,9 +75,38 @@ func doStuff(info *Info) {
 	/*n := 5*/
 	//m := 3
 
-	for i := 0; i < len(lines); i++ {
-		fmt.Println(lines[i])
-
+	type Operation struct {
+		firstIdx  int
+		secondIdx int
+		candies   int
 	}
+
+	ops := make([]Operation, 3)
+	jars := make([]int, 5)
+
+	for i := 0; i < len(lines); i++ {
+		nums := strings.Split(string(lines[i]), " ")
+		val1, _ := strconv.Atoi(nums[0])
+		val2, _ := strconv.Atoi(nums[1])
+		val3, _ := strconv.Atoi(nums[2])
+		op := Operation{val1, val2, val3}
+		ops[i] = op
+	}
+
+	fmt.Println("... %v", ops)
+
+	for _, op := range ops {
+		for i := op.firstIdx - 1; i < op.secondIdx; i++ {
+			jars[i] += op.candies
+		}
+	}
+
+	// sum
+	var sum int = 0
+	for _, v := range jars {
+		sum += v
+	}
+
+	fmt.Println("... %v", math.Floor(float64(sum/5)))
 
 }
