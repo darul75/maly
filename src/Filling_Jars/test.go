@@ -23,6 +23,8 @@ type LineInt int
 type Info struct {
 	LinesString []LineString
 	LinesInt    []LineInt
+	numJars     int
+	numOps      int
 }
 
 func main() {
@@ -48,17 +50,20 @@ func (info *Info) ReadInputFile(input string) {
 	}
 	inputScanner := bufio.NewScanner(in)
 	inputScanner.Split(bufio.ScanLines)
-	info.LinesString = make([]LineString, 4)
-	info.LinesInt = make([]LineInt, 4)
+	inputScanner.Scan()
+	s := inputScanner.Text()
+	infos := strings.Split(s, " ")
+	num1, _ := strconv.Atoi(infos[0])
+	num2, _ := strconv.Atoi(infos[1])
+	info.numJars = num1
+	info.numOps = num2
+
+	info.LinesString = make([]LineString, num2)
+	info.LinesInt = make([]LineInt, num2)
 
 	for i := 0; inputScanner.Scan(); i++ {
-		s := inputScanner.Text()
-		/*num, err := strconv.Atoi(s)
-		if err == nil {
-			info.LinesInt[i] = LineInt(num)
-		} else {*/
+		s = inputScanner.Text()
 		info.LinesString[i] = LineString(s)
-
 	}
 }
 
@@ -70,43 +75,22 @@ func (info *Info) Play() {
 
 func doStuff(info *Info) {
 
-	lines := info.LinesString[1:]
+	fmt.Println(len(info.LinesString))
+	fmt.Println(info.numJars)
+	fmt.Println(info.numOps)
 
-	/*n := 5*/
-	//m := 3
+	lines := info.LinesString[0:]
 
-	type Operation struct {
-		firstIdx  int
-		secondIdx int
-		candies   int
-	}
-
-	ops := make([]Operation, 3)
-	jars := make([]int, 5)
+	sum := 0
 
 	for i := 0; i < len(lines); i++ {
 		nums := strings.Split(string(lines[i]), " ")
 		val1, _ := strconv.Atoi(nums[0])
 		val2, _ := strconv.Atoi(nums[1])
 		val3, _ := strconv.Atoi(nums[2])
-		op := Operation{val1, val2, val3}
-		ops[i] = op
+		sum += (val2 - val1 + 1) * (val3)
 	}
 
-	fmt.Println("... %v", ops)
-
-	for _, op := range ops {
-		for i := op.firstIdx - 1; i < op.secondIdx; i++ {
-			jars[i] += op.candies
-		}
-	}
-
-	// sum
-	var sum int = 0
-	for _, v := range jars {
-		sum += v
-	}
-
-	fmt.Println("... %v", math.Floor(float64(sum/5)))
+	fmt.Println("%v", int64(math.Floor(float64(sum/info.numJars))))
 
 }
